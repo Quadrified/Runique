@@ -33,6 +33,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.domain)
+    implementation(projects.run.domain)
 
     implementation(libs.coil.compose)
     implementation(libs.google.maps.android.compose)

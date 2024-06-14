@@ -18,8 +18,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -33,6 +32,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.domain)
+    implementation(projects.core.database)
 
     implementation(libs.timber)
 }

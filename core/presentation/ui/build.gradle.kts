@@ -33,6 +33,8 @@ android {
 }
 
 dependencies {
+    implementation(projects.core.domain)
+    implementation(projects.core.presentation.designsystem)
 
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
