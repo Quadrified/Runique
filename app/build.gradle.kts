@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.mapsplatform.secrets.plugin)
+    // All Configs applied from here
     alias(libs.plugins.runique.android.application)
 }
 
@@ -13,15 +14,6 @@ android {
         }
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     buildFeatures {
         compose = true
     }
