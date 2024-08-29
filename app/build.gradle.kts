@@ -1,6 +1,7 @@
 plugins {
+    // Plugins applied in the order they're written
     // All Configs(Application and Compose related) applied from here
-    alias(libs.plugins.runique.android.application.compose)
+    alias(libs.plugins.runique.android.application.compose) // Convention Plugin from "build-logic/convention"
     alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 

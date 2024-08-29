@@ -7,6 +7,10 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+// Created to manage logic in multiple gradle convention plugins
+// Replaces android => defaultConfig {compileSdk, minSdk} , compileOptions{...}, kotlinOptions{...}
+// Common for both "Android Application" and "Java/Kotlin Library" modules
+
 // internal => used within this module
 internal fun Project.configureKotlinAndroid(
     commonExtension: CommonExtension<*, *, *, *, *, *>
@@ -17,14 +21,16 @@ internal fun Project.configureKotlinAndroid(
 
         compileOptions {
             isCoreLibraryDesugaringEnabled = true
-            sourceCompatibility  = JavaVersion.VERSION_11
-            targetCompatibility  = JavaVersion.VERSION_11
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
         }
     }
 
     configureKotlin()
 
     dependencies {
+        // coreLibraryDesugaring => mechanism that makes Java APIs backwards compatible for lower android versions
+        // For ANDROID_API_LEVEL<= 21
         "coreLibraryDesugaring"(libs.findLibrary("desugar.jdk.libs").get())
     }
 }
@@ -32,6 +38,7 @@ internal fun Project.configureKotlinAndroid(
 private fun Project.configureKotlin() {
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
+            // Same version as sourceCompatibility, targetCompatibility
             jvmTarget = JavaVersion.VERSION_11.toString()
         }
     }

@@ -1,4 +1,5 @@
 pluginManagement {
+    // build-logic to be distinguished as a separate gradle module from other gradle modules
     includeBuild("build-logic")
     repositories {
         google {
@@ -22,17 +23,21 @@ dependencyResolutionManagement {
 
 rootProject.name = "Runique"
 
+// To access modules in type-safe manner
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
+
 include(":auth:data")
 include(":auth:domain")
 include(":auth:presentation")
+
 include(":core:presentation:designsystem")
 include(":core:presentation:ui")
 include(":core:domain")
 include(":core:data")
 include(":core:database")
+
 include(":run:data")
 include(":run:domain")
 include(":run:presentation")

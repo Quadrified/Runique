@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.runique.android.feature.ui)
+    alias(libs.plugins.runique.android.feature.ui) // Convention Plugin from "build-logic/convention"
 }
 
 android {
