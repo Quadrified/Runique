@@ -28,14 +28,12 @@ gradlePlugin {
             implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
 
-        // For "Java/Kotlin Library" module without compose
         // For data layer
         register("androidLibrary") {
             id = "runique.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
 
-        // For "Java/Kotlin Library" module without compose
         // For data layer
         register("androidLibraryCompose") {
             id = "runique.android.library.compose"
@@ -52,6 +50,17 @@ gradlePlugin {
         register("androidRoom") {
             id = "runique.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
+        }
+
+        // For pure "Java/Kotlin Library" modules
+        register("jvmLibrary") {
+            id = "runique.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
+        // For Ktor
+        register("jvmKtor") {
+            id = "runique.jvm.ktor"
+            implementationClass = "JvmKtorConventionPlugin"
         }
     }
 }
