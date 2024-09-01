@@ -21,6 +21,8 @@ dependencyResolutionManagement {
     }
 }
 
+gradle.startParameter.excludedTaskNames.addAll(listOf(":build-logic:convention:testClasses"))
+
 rootProject.name = "Runique"
 
 // To access modules in type-safe manner
