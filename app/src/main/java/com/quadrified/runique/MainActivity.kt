@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
             RuniqueTheme {
                 Surface (
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.surface
                 ) {
                     Greeting(
                         name = "Android",
