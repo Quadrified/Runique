@@ -85,7 +85,8 @@ fun RuniqueTextField(
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
-        BasicTextField2(state = state,
+        BasicTextField2(
+            state = state,
             textStyle = LocalTextStyle.current.copy(
                 color = MaterialTheme.colorScheme.onBackground
             ),
@@ -111,7 +112,8 @@ fun RuniqueTextField(
                         MaterialTheme.colorScheme.primary
                     } else {
                         Color.Transparent
-                    }
+                    },
+                    shape = RoundedCornerShape(16.dp)
                 )
                 .padding(12.dp)
                 .onFocusChanged {

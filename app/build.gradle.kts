@@ -66,6 +66,9 @@ dependencies {
     // Crypto
     implementation(libs.androidx.security.crypto.ktx)
 
+    // Koin
+    implementation(libs.bundles.koin)
+
     // api => makes code from library available to modules that use this module,
     // used in dynamic feature module
     api(libs.core)
