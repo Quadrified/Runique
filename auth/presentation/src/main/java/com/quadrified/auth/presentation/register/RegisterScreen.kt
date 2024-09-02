@@ -40,7 +40,6 @@ import com.quadrified.core.presentation.designsystem.CrossIcon
 import com.quadrified.core.presentation.designsystem.EmailIcon
 import com.quadrified.core.presentation.designsystem.Poppins
 import com.quadrified.core.presentation.designsystem.RuniqueDarkRed
-import com.quadrified.core.presentation.designsystem.RuniqueGray
 import com.quadrified.core.presentation.designsystem.RuniqueGreen
 import com.quadrified.core.presentation.designsystem.RuniqueTheme
 import com.quadrified.core.presentation.designsystem.components.GradientBackground
@@ -81,7 +80,12 @@ fun RegisterScreenRoot(
     RegisterScreen(
         state = viewModel.state,
         // viewModel::onAction => when the user interacts with the RegisterScreen the onAction method in the ViewModel will be called to handle that interaction.
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                is RegisterAction.OnLoginClick -> onSignInClick()
+                else -> viewModel.onAction(action)
+            }
+        }
     )
 }
 
@@ -105,7 +109,7 @@ fun RegisterScreen(
             val annotatedString = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        fontFamily = Poppins, color = RuniqueGray
+                        fontFamily = Poppins, color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 ) {
                     append(stringResource(id = R.string.already_have_an_account) + " ")

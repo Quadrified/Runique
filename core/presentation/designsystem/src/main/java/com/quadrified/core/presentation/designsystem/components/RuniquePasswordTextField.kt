@@ -52,7 +52,7 @@ fun RuniquePasswordTextField(
     state: TextFieldState,
     hint: String,
     title: String?,
-    isPasswordVisible: Boolean = false,
+    isPasswordVisible: Boolean,
     onTogglePasswordVisibility: () -> Unit,
 ) {
     var isFocused by remember {
