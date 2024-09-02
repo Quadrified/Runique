@@ -54,7 +54,9 @@ fun RegisterScreenRoot(
     viewModel: RegisterViewModel = koinViewModel()
 ) {
     RegisterScreen(
-        state = viewModel.state, onAction = viewModel::onAction
+        state = viewModel.state,
+        // viewModel::onAction => when the user interacts with the RegisterScreen the onAction method in the ViewModel will be called to handle that interaction.
+        onAction = viewModel::onAction
     )
 }
 
