@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 
 fun LoginScreenRoot(
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: () -> Unit, // Navigation handled in NavigationRoot
     onSignUpClick: () -> Unit,
     viewModel: LoginViewModel = koinViewModel()
 ) {
@@ -72,6 +73,7 @@ fun LoginScreenRoot(
         state = viewModel.state,
         onAction = { action ->
             when (action) {
+                // Navigation handled in NavigationRoot
                 is LoginAction.OnRegisterClick -> onSignUpClick()
                 else -> Unit
             }
@@ -108,6 +110,7 @@ private fun LoginScreen(
                 state = state.email,
                 startIcon = EmailIcon,
                 endIcon = null,
+                keyboardType = KeyboardType.Email,
                 hint = stringResource(id = R.string.example_email),
                 title = stringResource(id = R.string.email)
             )
@@ -125,7 +128,7 @@ private fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
             RuniqueActionButton(text = stringResource(id = R.string.login),
                 isLoading = state.isLoggingIn,
-                enabled = state.canLogIn,
+                enabled = state.canLogIn && !state.isLoggingIn,
                 onClick = {
                     onAction(LoginAction.OnLoginClick)
                 })

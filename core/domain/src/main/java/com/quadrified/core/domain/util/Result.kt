@@ -1,6 +1,8 @@
 package com.quadrified.core.domain.util
 
-// D, E => The out keyword signifies that D is a covariant type parameter. This means that D can be used as an output type (e.g., return type) but not as an input type (e.g., function argument). Covariance allows a Result object to be used in contexts where a Result with a more specific type parameter D is expected.
+// D, E => The out keyword signifies that D is a covariant type parameter.
+// This means that D can be used as an output type (e.g., return type) but not as an input type (e.g., function argument).
+// Covariance allows a Result object to be used in contexts where a Result with a more specific type parameter D is expected.
 sealed interface Result<out D, out E : Error> {
     data class Success<out D>(val data: D) : Result<D, Nothing>
 

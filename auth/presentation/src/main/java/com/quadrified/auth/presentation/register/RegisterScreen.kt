@@ -53,7 +53,7 @@ import org.koin.androidx.compose.koinViewModel
 
 fun RegisterScreenRoot(
     onSignInClick: () -> Unit,
-    onSuccessfulRegistration: () -> Unit,
+    onSuccessfulRegistration: () -> Unit,  // Navigation handled in NavigationRoot
     viewModel: RegisterViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
