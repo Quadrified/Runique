@@ -1,5 +1,6 @@
 package com.quadrified.runique
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -44,7 +45,7 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                 onSignInClick = {
                     navController.navigate("login") {
                         // For not having multiple instances in back stack when navigating b/w Login and Register
-                        // It can cause user to click back multiple times to just get back to Intro
+                        // Otherwise It can cause user to click back multiple times to just get back to Intro
                         popUpTo("register") {
                             inclusive = true
                             saveState = true // saving any state
@@ -56,6 +57,9 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                     navController.navigate("login")
                 }
             )
+        }
+        composable("login") {
+            Text(text = "Login")
         }
     }
 }

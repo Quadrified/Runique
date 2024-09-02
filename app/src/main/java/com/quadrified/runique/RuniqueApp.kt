@@ -3,6 +3,7 @@ package com.quadrified.runique
 import android.app.Application
 import com.quadrified.auth.data.di.authDataModule
 import com.quadrified.auth.presentation.di.authViewModelModule
+import com.quadrified.core.data.di.coreDataModule
 import com.quadrified.runique.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -24,8 +25,8 @@ class RuniqueApp : Application() {
                 appModule,
                 authDataModule,
                 authViewModelModule,
+                coreDataModule
             )
         }
     }
-
 }
