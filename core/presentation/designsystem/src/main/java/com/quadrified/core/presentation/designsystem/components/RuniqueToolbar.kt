@@ -127,7 +127,7 @@ fun RuniqueToolbar(
 
 @Preview
 @Composable
-fun RuniqueToolbarPreview() {
+private fun RuniqueToolbarPreview() {
     RuniqueTheme {
         RuniqueToolbar(
             showBackButton = false, title = "Runique", menuItems = listOf(
