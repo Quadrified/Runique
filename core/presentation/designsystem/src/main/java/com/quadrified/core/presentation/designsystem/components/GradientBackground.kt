@@ -90,7 +90,7 @@ fun GradientBackground(
 
 @Preview(showSystemUi = true)
 @Composable
-fun GradientBackgroundPreview() {
+private fun GradientBackgroundPreview() {
     RuniqueTheme {
         GradientBackground(modifier = Modifier.fillMaxSize()) {
 
