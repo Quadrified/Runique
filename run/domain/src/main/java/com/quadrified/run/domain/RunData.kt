@@ -7,5 +7,5 @@ import kotlin.time.Duration
 data class RunData(
     val distanceMeters: Int = 0,
     val pace: Duration = Duration.ZERO,
-    val location: List<List<LocationTimestamp>> = emptyList()
+    val locations: List<List<LocationTimestamp>> = emptyList()
 )
