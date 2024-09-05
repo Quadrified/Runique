@@ -58,6 +58,8 @@ fun RegisterScreenRoot(
 ) {
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Observing events from Channel
     ObserveAsEvent(flow = viewModel.events) { event ->
         when (event) {
             is RegisterEvent.Error -> {
