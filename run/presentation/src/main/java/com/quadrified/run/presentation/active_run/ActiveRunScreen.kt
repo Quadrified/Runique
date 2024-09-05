@@ -31,6 +31,7 @@ import com.quadrified.core.presentation.designsystem.components.RuniqueScaffold
 import com.quadrified.core.presentation.designsystem.components.RuniqueToolbar
 import com.quadrified.run.presentation.R
 import com.quadrified.run.presentation.active_run.components.RunDataCard
+import com.quadrified.run.presentation.active_run.maps.TrackerMap
 import com.quadrified.run.presentation.util.hasLocationPermission
 import com.quadrified.run.presentation.util.hasNotificationPermission
 import com.quadrified.run.presentation.util.shouldShowLocationPermissionRationale
@@ -141,6 +142,13 @@ private fun ActiveRunScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
         ) {
+            TrackerMap(
+                isRunFinished = state.isRunFinished,
+                currentLocation = state.currentLocation,
+                locations = state.runData.locations,
+                onSnapShot = {},
+                modifier = Modifier.fillMaxSize()
+            )
             RunDataCard(
                 elapsedTime = state.elapsedTime,
                 runData = state.runData,
