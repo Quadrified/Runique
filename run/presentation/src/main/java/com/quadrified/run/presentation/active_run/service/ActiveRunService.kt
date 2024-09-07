@@ -38,6 +38,7 @@ class ActiveRunService : Service() {
         NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(com.quadrified.core.presentation.designsystem.R.drawable.logo)
             .setContentText(getString(R.string.active_run))
+            .setOnlyAlertOnce(true)
     }
 
     // Injecting RunningTracker from "run/domain"
