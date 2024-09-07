@@ -33,19 +33,23 @@ import com.quadrified.core.presentation.designsystem.components.RuniqueToolbar
 import com.quadrified.run.presentation.R
 import com.quadrified.run.presentation.active_run.components.RunDataCard
 import com.quadrified.run.presentation.active_run.maps.TrackerMap
+import com.quadrified.run.presentation.active_run.service.ActiveRunService
 import com.quadrified.run.presentation.util.hasLocationPermission
 import com.quadrified.run.presentation.util.hasNotificationPermission
 import com.quadrified.run.presentation.util.shouldShowLocationPermissionRationale
 import com.quadrified.run.presentation.util.shouldShowNotificationPermissionRationale
 import org.koin.androidx.compose.koinViewModel
+import kotlin.contracts.contract
 
 @Composable
-
 fun ActiveRunScreenRoot(
+    // Bubbling up to "app" module to have reference of Activity Class
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
     viewModel: ActiveRunViewModel = koinViewModel()
 ) {
     ActiveRunScreen(
         state = viewModel.state,
+        onServiceToggle = onServiceToggle,
         onAction = viewModel::onAction
     )
 }
@@ -54,6 +58,7 @@ fun ActiveRunScreenRoot(
 @Composable
 private fun ActiveRunScreen(
     state: ActiveRunState,
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
     onAction: (ActiveRunAction) -> Unit
 ) {
     val context = LocalContext.current
@@ -109,6 +114,18 @@ private fun ActiveRunScreen(
 
         if (!showLocationRationale && !showNotificationRationale) {
             permissionLauncher.requestRuniquePermissions(context)
+        }
+    }
+
+    LaunchedEffect(key1 = state.shouldTrack) {
+        if(context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
+            onServiceToggle(true)
+        }
+    }
+
+    LaunchedEffect(key1 = state.isRunFinished) {
+        if(state.isRunFinished) {
+            onServiceToggle(false)
         }
     }
 
@@ -260,7 +277,8 @@ private fun ActiveRunScreenPreview() {
     RuniqueTheme {
         ActiveRunScreen(
             state = ActiveRunState(),
-            onAction = {}
+            onAction = {},
+            onServiceToggle = {}
         )
     }
 

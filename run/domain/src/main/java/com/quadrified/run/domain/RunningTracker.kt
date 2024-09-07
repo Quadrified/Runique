@@ -33,7 +33,8 @@ class RunningTracker(
     val runData = _runData.asStateFlow()
 
     // Actively tracking location or not
-    private val isTracking = MutableStateFlow(false)
+    private val _isTracking = MutableStateFlow(false)
+    val isTracking = _isTracking.asStateFlow()
 
     // Listening to location data reactively
     private val isObservingLocation = MutableStateFlow(false)
@@ -132,7 +133,7 @@ class RunningTracker(
 
     // Used in ViewModel
     fun setIsTracking(isTracker: Boolean) {
-        this.isTracking.value = isTracker
+        this._isTracking.value = isTracker
     }
 
     fun startObservingLocation() {

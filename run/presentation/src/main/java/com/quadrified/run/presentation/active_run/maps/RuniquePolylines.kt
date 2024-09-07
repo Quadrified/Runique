@@ -11,6 +11,7 @@ import com.quadrified.core.domain.location.LocationTimestamp
 fun RuniquePolylines(
     locations: List<List<LocationTimestamp>>
 ) {
+    // Execute "remember" whenever location changes
     val polylines = remember(locations) {
         locations.map {
             it.zipWithNext { timestamp1, timestamp2 ->
