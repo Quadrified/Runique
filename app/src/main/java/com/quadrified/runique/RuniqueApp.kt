@@ -4,6 +4,7 @@ import android.app.Application
 import com.quadrified.auth.data.di.authDataModule
 import com.quadrified.auth.presentation.di.authViewModelModule
 import com.quadrified.core.data.di.coreDataModule
+import com.quadrified.core.database.di.databaseModule
 import com.quadrified.run.location.di.locationModule
 import com.quadrified.run.presentation.di.runPresentationModule
 import com.quadrified.runique.di.appModule
@@ -34,7 +35,8 @@ class RuniqueApp : Application() {
                 authViewModelModule,
                 coreDataModule,
                 runPresentationModule,
-                locationModule
+                locationModule,
+                databaseModule
             )
         }
     }
