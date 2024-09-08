@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.runique.android.feature.ui) // Convention Plugin from "build-logic/convention"
+    alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 
 android {

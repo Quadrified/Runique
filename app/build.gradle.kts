@@ -5,7 +5,6 @@ plugins {
     // Convention Plugin from "build-logic/convention"
     alias(libs.plugins.runique.android.application.compose)
     alias(libs.plugins.runique.jvm.ktor)
-    alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 
 android {
