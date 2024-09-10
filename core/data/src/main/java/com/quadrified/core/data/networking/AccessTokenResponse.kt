@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AccessTokenResponse(
     val accessToken: String,
-    val expirationTimeStamp: String
+    val expirationTimeStamp: Long
 )

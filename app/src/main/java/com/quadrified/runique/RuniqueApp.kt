@@ -6,6 +6,7 @@ import com.quadrified.auth.presentation.di.authViewModelModule
 import com.quadrified.core.data.di.coreDataModule
 import com.quadrified.core.database.di.databaseModule
 import com.quadrified.run.location.di.locationModule
+import com.quadrified.run.network.di.networkModule
 import com.quadrified.run.presentation.di.runPresentationModule
 import com.quadrified.runique.di.appModule
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +37,8 @@ class RuniqueApp : Application() {
                 coreDataModule,
                 runPresentationModule,
                 locationModule,
-                databaseModule
+                databaseModule,
+                networkModule
             )
         }
     }
