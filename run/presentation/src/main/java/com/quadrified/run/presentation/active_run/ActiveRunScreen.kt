@@ -2,6 +2,7 @@ package com.quadrified.run.presentation.active_run
 
 import android.Manifest
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -39,7 +40,7 @@ import com.quadrified.run.presentation.util.hasNotificationPermission
 import com.quadrified.run.presentation.util.shouldShowLocationPermissionRationale
 import com.quadrified.run.presentation.util.shouldShowNotificationPermissionRationale
 import org.koin.androidx.compose.koinViewModel
-import kotlin.contracts.contract
+import java.io.ByteArrayOutputStream
 
 @Composable
 fun ActiveRunScreenRoot(
@@ -48,9 +49,7 @@ fun ActiveRunScreenRoot(
     viewModel: ActiveRunViewModel = koinViewModel()
 ) {
     ActiveRunScreen(
-        state = viewModel.state,
-        onServiceToggle = onServiceToggle,
-        onAction = viewModel::onAction
+        state = viewModel.state, onServiceToggle = onServiceToggle, onAction = viewModel::onAction
     )
 }
 
@@ -62,36 +61,33 @@ private fun ActiveRunScreen(
     onAction: (ActiveRunAction) -> Unit
 ) {
     val context = LocalContext.current
-    val permissionLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { perms ->
-            val hasCourseLocationPermission =
-                perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-            val hasFineLocationPermission =
-                perms[Manifest.permission.ACCESS_FINE_LOCATION] == true
-            val hasNotificationPermission = if (Build.VERSION.SDK_INT >= 33) {
-                perms[Manifest.permission.POST_NOTIFICATIONS] == true
-            } else true
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { perms ->
+        val hasCourseLocationPermission = perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        val hasFineLocationPermission = perms[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val hasNotificationPermission = if (Build.VERSION.SDK_INT >= 33) {
+            perms[Manifest.permission.POST_NOTIFICATIONS] == true
+        } else true
 
-            // Displaying/Invoking permission
-            val activity = context as ComponentActivity
-            val showLocationRationale = activity.shouldShowLocationPermissionRationale()
-            val showNotificationRationale = activity.shouldShowNotificationPermissionRationale()
+        // Displaying/Invoking permission
+        val activity = context as ComponentActivity
+        val showLocationRationale = activity.shouldShowLocationPermissionRationale()
+        val showNotificationRationale = activity.shouldShowNotificationPermissionRationale()
 
-            onAction(
-                ActiveRunAction.SubmitLocationPermissionInfo(
-                    acceptedLocationPermission = hasCourseLocationPermission && hasFineLocationPermission,
-                    showLocationPermissionRationale = showLocationRationale
-                )
+        onAction(
+            ActiveRunAction.SubmitLocationPermissionInfo(
+                acceptedLocationPermission = hasCourseLocationPermission && hasFineLocationPermission,
+                showLocationPermissionRationale = showLocationRationale
             )
-            onAction(
-                ActiveRunAction.SubmitNotificationPermissionInfo(
-                    acceptedNotificationPermission = hasNotificationPermission,
-                    showNotificationPermissionRationale = showNotificationRationale
-                )
+        )
+        onAction(
+            ActiveRunAction.SubmitNotificationPermissionInfo(
+                acceptedNotificationPermission = hasNotificationPermission,
+                showNotificationPermissionRationale = showNotificationRationale
             )
-        }
+        )
+    }
 
     // Requesting permission on screen load
     LaunchedEffect(key1 = true) {
@@ -118,43 +114,34 @@ private fun ActiveRunScreen(
     }
 
     LaunchedEffect(key1 = state.shouldTrack) {
-        if(context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
+        if (context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
             onServiceToggle(true)
         }
     }
 
     LaunchedEffect(key1 = state.isRunFinished) {
-        if(state.isRunFinished) {
+        if (state.isRunFinished) {
             onServiceToggle(false)
         }
     }
 
-    RuniqueScaffold(
-        withGradient = false,
-        topAppBar = {
-            RuniqueToolbar(
-                showBackButton = true,
-                title = stringResource(id = R.string.active_run),
-                onBackClick = {
-                    onAction(ActiveRunAction.OnBackClick)
-                }
-            )
-        },
-        floatingActionButton = {
-            RuniqueFAB(
-                icon = if (state.shouldTrack) StopIcon else StartIcon,
-                onClick = {
-                    onAction(ActiveRunAction.OnToggleRunClick)
-                },
-                iconSize = 20.dp,
-                contentDescription = if (state.shouldTrack) {
-                    stringResource(id = R.string.pause_run)
-                } else {
-                    stringResource(id = R.string.start_run)
-                }
-            )
-        }
-    ) { padding ->
+    RuniqueScaffold(withGradient = false, topAppBar = {
+        RuniqueToolbar(showBackButton = true,
+            title = stringResource(id = R.string.active_run),
+            onBackClick = {
+                onAction(ActiveRunAction.OnBackClick)
+            })
+    }, floatingActionButton = {
+        RuniqueFAB(
+            icon = if (state.shouldTrack) StopIcon else StartIcon, onClick = {
+                onAction(ActiveRunAction.OnToggleRunClick)
+            }, iconSize = 20.dp, contentDescription = if (state.shouldTrack) {
+                stringResource(id = R.string.pause_run)
+            } else {
+                stringResource(id = R.string.start_run)
+            }
+        )
+    }) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -164,7 +151,15 @@ private fun ActiveRunScreen(
                 isRunFinished = state.isRunFinished,
                 currentLocation = state.currentLocation,
                 locations = state.runData.locations,
-                onSnapShot = {},
+                onSnapShot = { bmp ->
+                    val stream = ByteArrayOutputStream()
+                    stream.use {
+                        bmp.compress(
+                            Bitmap.CompressFormat.JPEG, 80, it
+                        )
+                    }
+                    onAction(ActiveRunAction.OnRunProcessed(stream.toByteArray()))
+                },
                 modifier = Modifier.fillMaxSize()
             )
             RunDataCard(
@@ -179,38 +174,28 @@ private fun ActiveRunScreen(
     }
 
     if (!state.shouldTrack && state.hasStartedRunning) {
-        RuniqueDialog(
-            title = stringResource(id = R.string.runn_is_paused),
-            onDismiss = {
-                onAction(ActiveRunAction.OnResumeRunClick)
-            },
-            description = stringResource(id = R.string.resume_or_finish_run),
-            primaryButton = {
-                RuniqueActionButton(
-                    text = stringResource(id = R.string.resume),
-                    isLoading = false,
-                    onClick = {
-                        onAction(ActiveRunAction.OnResumeRunClick)
-                    },
-                    modifier = Modifier.weight(1f)
-                )
-            },
-            secondaryButton = {
-                RuniqueOutlinedActionButton(
-                    text = stringResource(id = R.string.finish),
-                    isLoading = state.isSavingRun,
-                    onClick = {
-                        onAction(ActiveRunAction.OnFinishRunClick)
-                    },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        )
+        RuniqueDialog(title = stringResource(id = R.string.runn_is_paused), onDismiss = {
+            onAction(ActiveRunAction.OnResumeRunClick)
+        }, description = stringResource(id = R.string.resume_or_finish_run), primaryButton = {
+            RuniqueActionButton(
+                text = stringResource(id = R.string.resume), isLoading = false, onClick = {
+                    onAction(ActiveRunAction.OnResumeRunClick)
+                }, modifier = Modifier.weight(1f)
+            )
+        }, secondaryButton = {
+            RuniqueOutlinedActionButton(
+                text = stringResource(id = R.string.finish),
+                isLoading = state.isSavingRun,
+                onClick = {
+                    onAction(ActiveRunAction.OnFinishRunClick)
+                },
+                modifier = Modifier.weight(1f)
+            )
+        })
     }
 
     if (state.showLocationRationale || state.showNotificationRationale) {
-        RuniqueDialog(
-            title = stringResource(id = R.string.permission_required),
+        RuniqueDialog(title = stringResource(id = R.string.permission_required),
             onDismiss = { /* Normal dismissing not allowed for permissions */ },
             description = when {
                 state.showLocationRationale && state.showNotificationRationale -> {
@@ -227,16 +212,13 @@ private fun ActiveRunScreen(
 
             },
             primaryButton = {
-                RuniqueOutlinedActionButton(
-                    text = stringResource(id = R.string.okay),
+                RuniqueOutlinedActionButton(text = stringResource(id = R.string.okay),
                     isLoading = false,
                     onClick = {
                         onAction(ActiveRunAction.DismissRationaleDialog)
                         permissionLauncher.requestRuniquePermissions(context)
-                    }
-                )
-            }
-        )
+                    })
+            })
     }
 }
 
@@ -248,8 +230,7 @@ private fun ActivityResultLauncher<Array<String>>.requestRuniquePermissions(
     val hasNotificationPermission = context.hasNotificationPermission()
 
     val locationPermissions = arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION
     )
     val notificationPermission = if (Build.VERSION.SDK_INT >= 33) {
         arrayOf(Manifest.permission.POST_NOTIFICATIONS)
@@ -275,11 +256,6 @@ private fun ActivityResultLauncher<Array<String>>.requestRuniquePermissions(
 @Composable
 private fun ActiveRunScreenPreview() {
     RuniqueTheme {
-        ActiveRunScreen(
-            state = ActiveRunState(),
-            onAction = {},
-            onServiceToggle = {}
-        )
+        ActiveRunScreen(state = ActiveRunState(), onAction = {}, onServiceToggle = {})
     }
-
 }
