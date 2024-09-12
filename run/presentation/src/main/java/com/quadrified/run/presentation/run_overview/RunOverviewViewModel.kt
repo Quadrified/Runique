@@ -26,13 +26,16 @@ class RunOverviewViewModel(
         }.launchIn(viewModelScope)
 
         viewModelScope.launch {
+            // Syncing pending runs before fetching remote
+            runRepository.syncPendingRuns()
+
             // Fetch from remote
             runRepository.fetchRuns()
         }
     }
 
     fun onAction(action: RunOverviewAction) {
-        when(action) {
+        when (action) {
             RunOverviewAction.OnLogoutClick -> Unit
             RunOverviewAction.OnStartClick -> Unit
             is RunOverviewAction.DeleteRun -> {

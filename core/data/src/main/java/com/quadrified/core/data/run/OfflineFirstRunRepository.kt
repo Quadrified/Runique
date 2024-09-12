@@ -1,5 +1,8 @@
 package com.quadrified.core.data.run
 
+import com.quadrified.core.database.dao.RunPendingSyncDao
+import com.quadrified.core.database.mappers.toRun
+import com.quadrified.core.domain.SessionStorage
 import com.quadrified.core.domain.run.LocalRunDataSource
 import com.quadrified.core.domain.run.RemoteRunDataSource
 import com.quadrified.core.domain.run.Run
@@ -10,8 +13,11 @@ import com.quadrified.core.domain.util.EmptyResult
 import com.quadrified.core.domain.util.Result
 import com.quadrified.core.domain.util.asEmptyDataResult
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // Implementation of "RunRepository" from "core/domain/run"
 // Fetching => First we save all data in local
@@ -19,7 +25,9 @@ import kotlinx.coroutines.flow.Flow
 class OfflineFirstRunRepository(
     private val localRunDataSource: LocalRunDataSource,
     private val remoteRunDataSource: RemoteRunDataSource,
-    private val applicationScope: CoroutineScope
+    private val applicationScope: CoroutineScope,
+    private val runPendingSyncDao: RunPendingSyncDao,
+    private val sessionStorage: SessionStorage
 ) : RunRepository {
     /**
      * LocalDB to be single source of truth
@@ -59,8 +67,7 @@ class OfflineFirstRunRepository(
         // id => inserted from localDB
         val runWithId = run.copy(id = localResult.data)
         val remoteResult = remoteRunDataSource.postRun(
-            run = runWithId,
-            mapPicture = mapPicture
+            run = runWithId, mapPicture = mapPicture
         )
 
         return when (remoteResult) {
@@ -79,9 +86,77 @@ class OfflineFirstRunRepository(
     override suspend fun deleteRun(id: RunId) {
         localRunDataSource.deleteRun(id)
 
+        // For an entity that was created and deleted LOCALLY
+        // Because delete sync is faster and after delete the locally created run will be synced
+        // This results in a run that was deleted LOCALLY and then again synced up to REMOTE
+        val isPendingSync = runPendingSyncDao.getRunPendingSyncEntity(id) != null
+
+        if (isPendingSync) {
+            runPendingSyncDao.deleteRunPendingSyncEntity(id)
+            return
+        }
+
         val remoteResult = applicationScope.async {
             remoteRunDataSource.deleteRun(id)
         }.await()
     }
 
+    override suspend fun syncPendingRuns() {
+        // To create independent coroutines
+        withContext(Dispatchers.IO) {
+            val userId = sessionStorage.get()?.userId ?: return@withContext
+
+            // Runs that were created LOCALLY but were never synced REMOTELY
+            val createdRuns = async {
+                runPendingSyncDao.getAllRunPendingSyncEntities(userId)
+            }
+
+            // Runs that were deleted LOCALLY but were never synced REMOTELY
+            val deletedRuns = async {
+                runPendingSyncDao.getAllDeletedRunSyncEntities(userId)
+            }
+
+            val createJobs = createdRuns.await().map {
+                launch {
+                    val run = it.run.toRun()
+                    when (remoteRunDataSource
+                        .postRun(
+                            run,
+                            it.mapPictureBytes
+                        )
+                    ) {
+                        is Result.Error -> Unit
+                        is Result.Success -> {
+                            applicationScope.launch {
+                                // To delete the pending run after sync from localDB
+                                runPendingSyncDao.deleteRunPendingSyncEntity(it.runId)
+                            }.join()
+                        }
+                    }
+                }
+            }
+
+            val deleteJobs = deletedRuns.await().map {
+                launch {
+                    when (remoteRunDataSource
+                        .deleteRun(
+                            it.runId,
+                        )
+                    ) {
+                        is Result.Error -> Unit
+                        is Result.Success -> {
+                            applicationScope.launch {
+                                // To delete the pending deleted run after sync from localDB
+                                runPendingSyncDao.deleteDeletedRunSyncEntity(it.runId)
+                            }.join()
+                        }
+                    }
+                }
+            }
+
+            // join() => waits till all coroutines are resolved
+            createJobs.forEach { it.join() }
+            deleteJobs.forEach { it.join() }
+        }
+    }
 }
