@@ -14,11 +14,19 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 
 // Implementation of "RunRepository" from "core/domain/run"
+// Fetching => First we save all data in local
+// Posting => Do any operation in localDB and then do remote calls
 class OfflineFirstRunRepository(
     private val localRunDataSource: LocalRunDataSource,
     private val remoteRunDataSource: RemoteRunDataSource,
     private val applicationScope: CoroutineScope
 ) : RunRepository {
+    /**
+     * LocalDB to be single source of truth
+     * Fetching data from remote and pushing it to localDB and display it on UI
+     * NEVER FETCHING AND SHOWING DIRECTLY FROM API
+     */
+
     // From LocalDB
     override fun getRuns(): Flow<List<Run>> {
         // getRuns() interface from "core.domain.run"
@@ -26,9 +34,6 @@ class OfflineFirstRunRepository(
         return localRunDataSource.getRuns()
     }
 
-    /**
-     * LocalDB to be single source of truth
-     */
     // From Remote
     override suspend fun fetchRuns(): EmptyResult<DataError> {
         return when (val result = remoteRunDataSource.getRuns()) {
@@ -38,6 +43,7 @@ class OfflineFirstRunRepository(
                 // applicationScope lives longer
                 applicationScope.async {
                     // Fetching runs and updating it in localDB
+                    // Triggers getRuns() to keep the data up to date
                     localRunDataSource.upsertRuns(result.data).asEmptyDataResult()
                 }.await()
             }
@@ -50,6 +56,7 @@ class OfflineFirstRunRepository(
             return localResult.asEmptyDataResult()
         }
 
+        // id => inserted from localDB
         val runWithId = run.copy(id = localResult.data)
         val remoteResult = remoteRunDataSource.postRun(
             run = runWithId,

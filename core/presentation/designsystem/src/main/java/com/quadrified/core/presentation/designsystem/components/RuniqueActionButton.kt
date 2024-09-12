@@ -94,9 +94,9 @@ fun RuniqueOutlinedActionButton(
             CircularProgressIndicator(
                 modifier = Modifier
                     .size(15.dp)
-                    .alpha(if (isLoading) 0f else 1f),
+                    .alpha(if (isLoading) 1f else 0f),
                 strokeWidth = 1.5.dp,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
                 modifier = Modifier.alpha(if (isLoading) 0f else 1f),

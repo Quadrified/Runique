@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 @Composable
-fun <T> ObserveAsEvent(
+fun <T> ObserveAsEvents(
     flow: Flow<T>, // comes from ViewModel
     key1: Any? = null,
     key2: Any? = null,

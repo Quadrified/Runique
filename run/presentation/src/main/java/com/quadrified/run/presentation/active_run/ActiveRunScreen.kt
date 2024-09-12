@@ -32,7 +32,7 @@ import com.quadrified.core.presentation.designsystem.components.RuniqueFAB
 import com.quadrified.core.presentation.designsystem.components.RuniqueOutlinedActionButton
 import com.quadrified.core.presentation.designsystem.components.RuniqueScaffold
 import com.quadrified.core.presentation.designsystem.components.RuniqueToolbar
-import com.quadrified.core.presentation.ui.ObserveAsEvent
+import com.quadrified.core.presentation.ui.ObserveAsEvents
 import com.quadrified.run.presentation.R
 import com.quadrified.run.presentation.active_run.components.RunDataCard
 import com.quadrified.run.presentation.active_run.maps.TrackerMap
@@ -53,7 +53,7 @@ fun ActiveRunScreenRoot(
     viewModel: ActiveRunViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
-    ObserveAsEvent(flow = viewModel.events) { event ->
+    ObserveAsEvents(flow = viewModel.events) { event ->
         when (event) {
             is ActiveRunEvent.Error -> {
                 Toast.makeText(

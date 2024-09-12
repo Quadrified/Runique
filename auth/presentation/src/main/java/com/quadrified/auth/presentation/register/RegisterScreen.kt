@@ -46,7 +46,7 @@ import com.quadrified.core.presentation.designsystem.components.GradientBackgrou
 import com.quadrified.core.presentation.designsystem.components.RuniqueActionButton
 import com.quadrified.core.presentation.designsystem.components.RuniquePasswordTextField
 import com.quadrified.core.presentation.designsystem.components.RuniqueTextField
-import com.quadrified.core.presentation.ui.ObserveAsEvent
+import com.quadrified.core.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -60,7 +60,7 @@ fun RegisterScreenRoot(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     // Observing events from Channel
-    ObserveAsEvent(flow = viewModel.events) { event ->
+    ObserveAsEvents(flow = viewModel.events) { event ->
         when (event) {
             is RegisterEvent.Error -> {
                 keyboardController?.hide()
