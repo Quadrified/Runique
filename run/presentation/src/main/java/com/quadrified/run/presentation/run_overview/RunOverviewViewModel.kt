@@ -6,19 +6,28 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.quadrified.core.domain.run.RunRepository
+import com.quadrified.core.domain.run.SyncRunScheduler
 import com.quadrified.run.presentation.run_overview.mapper.toRunUi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.minutes
 
 class RunOverviewViewModel(
-    private val runRepository: RunRepository
+    private val runRepository: RunRepository,
+    private val syncRunScheduler: SyncRunScheduler
 ) : ViewModel() {
 
     var state by mutableStateOf(RunOverviewState())
         private set
 
     init {
+        // Periodic fetching of Run data via WorkManager Workers
+        viewModelScope.launch {
+            syncRunScheduler.scheduleSync(
+                type = SyncRunScheduler.SyncType.FetchRuns(30.minutes)
+            )
+        }
 
         runRepository.getRuns().onEach { runs ->
             val runsUi = runs.map { it.toRunUi() }
