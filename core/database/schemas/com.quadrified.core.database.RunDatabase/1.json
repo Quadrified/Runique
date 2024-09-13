@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8b076cbfa86047ebc90c44e4fd5b57d7",
+    "identityHash": "c980ff9b77fd41175058e0e0eb3bb761",
     "entities": [
       {
         "tableName": "RunEntity",
@@ -77,12 +77,130 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "RunPendingSyncEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`runId` TEXT NOT NULL, `mapPictureBytes` BLOB NOT NULL, `userId` TEXT NOT NULL, `durationMillis` INTEGER NOT NULL, `distanceMeters` INTEGER NOT NULL, `datTimeUtc` TEXT NOT NULL, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `avgSpeedKmh` REAL NOT NULL, `maxSpeedKmh` REAL NOT NULL, `totalElevationMeters` INTEGER NOT NULL, `mapPictureUrl` TEXT, `id` TEXT NOT NULL, PRIMARY KEY(`runId`))",
+        "fields": [
+          {
+            "fieldPath": "runId",
+            "columnName": "runId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mapPictureBytes",
+            "columnName": "mapPictureBytes",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.durationMillis",
+            "columnName": "durationMillis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.distanceMeters",
+            "columnName": "distanceMeters",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.datTimeUtc",
+            "columnName": "datTimeUtc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.latitude",
+            "columnName": "latitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.longitude",
+            "columnName": "longitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.avgSpeedKmh",
+            "columnName": "avgSpeedKmh",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.maxSpeedKmh",
+            "columnName": "maxSpeedKmh",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.totalElevationMeters",
+            "columnName": "totalElevationMeters",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "run.mapPictureUrl",
+            "columnName": "mapPictureUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "run.id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "runId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DeleteRunSyncEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`runId` TEXT NOT NULL, `userId` TEXT NOT NULL, PRIMARY KEY(`runId`))",
+        "fields": [
+          {
+            "fieldPath": "runId",
+            "columnName": "runId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "runId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8b076cbfa86047ebc90c44e4fd5b57d7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c980ff9b77fd41175058e0e0eb3bb761')"
     ]
   }
 }
