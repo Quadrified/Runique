@@ -2,5 +2,6 @@ package com.quadrified.convention
 
 enum class ExtensionType {
     APPLICATION,
-    LIBRARY
+    LIBRARY,
+    DYNAMIC_FEATURE
 }

@@ -52,6 +52,12 @@ gradlePlugin {
             implementationClass = "AndroidRoomConventionPlugin"
         }
 
+        // For Dynamic Feature
+        register("androidDynamicFeature") {
+            id = "runique.android.dynamic.feature"
+            implementationClass = "AndroidDynamicFeatureConventionPlugin"
+        }
+
         // For pure "Java/Kotlin Library" modules
         register("jvmLibrary") {
             id = "runique.jvm.library"

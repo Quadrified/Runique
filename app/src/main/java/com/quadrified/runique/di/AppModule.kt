@@ -23,5 +23,6 @@ val appModule = module {
     single<CoroutineScope> {
         (androidApplication() as RuniqueApp).applicationScope
     }
+
     viewModelOf(::MainViewModel)
 }
