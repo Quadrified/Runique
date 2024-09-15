@@ -1,5 +1,7 @@
 package com.quadrified.wear.run.presentation
 
-sealed interface TackerAction {
-    data object OnToggleRunClick: TrackerAction
+sealed interface TrackerAction {
+    data object OnToggleRunClick : TrackerAction
+
+    data object OnFinishRunClick : TrackerAction
 }
