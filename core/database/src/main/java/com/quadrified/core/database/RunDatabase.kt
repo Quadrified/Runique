@@ -2,6 +2,7 @@ package com.quadrified.core.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.quadrified.core.database.dao.AnalyticsDao
 import com.quadrified.core.database.dao.RunDao
 import com.quadrified.core.database.dao.RunPendingSyncDao
 import com.quadrified.core.database.entity.DeleteRunSyncEntity
@@ -17,4 +18,6 @@ abstract class RunDatabase : RoomDatabase() {
     abstract val runDao: RunDao
 
     abstract val runPendingSyncDao: RunPendingSyncDao
+
+    abstract val analyticsDao: AnalyticsDao
 }

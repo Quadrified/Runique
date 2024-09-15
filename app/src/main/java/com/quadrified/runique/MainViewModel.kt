@@ -23,4 +23,9 @@ class MainViewModel(
             state = state.copy(isCheckingAuth = false)
         }
     }
+
+    // To display Analytics installation
+    fun setAnalyticsDialogVisibility(isVisible: Boolean) {
+        state = state.copy(showAnalyticsInstallDialog = isVisible)
+    }
 }
