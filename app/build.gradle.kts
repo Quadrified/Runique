@@ -88,4 +88,7 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+
+    implementation(projects.core.connectivity.domain)
+    implementation(projects.core.connectivity.data)
 }

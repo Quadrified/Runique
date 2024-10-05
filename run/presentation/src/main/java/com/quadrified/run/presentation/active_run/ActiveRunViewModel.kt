@@ -13,6 +13,7 @@ import com.quadrified.core.domain.util.Result
 import com.quadrified.core.presentation.ui.asUiText
 import com.quadrified.run.domain.LocationDataCalculator
 import com.quadrified.run.domain.RunningTracker
+import com.quadrified.run.domain.WatchConnector
 import com.quadrified.run.presentation.active_run.service.ActiveRunService
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,12 +24,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
 class ActiveRunViewModel(
     private val runningTracker: RunningTracker,
-    private val runRepository: RunRepository
+    private val runRepository: RunRepository,
+    private val watchConnector: WatchConnector,
 ) : ViewModel() {
 
     var state by mutableStateOf(
@@ -42,7 +45,7 @@ class ActiveRunViewModel(
     private val eventChannel = Channel<ActiveRunEvent>()
     val events = eventChannel.receiveAsFlow()
 
-    // Converting Compose state to state (snapshotFlow) to StateFlow(stateIn)
+    // Converting Compose state (snapshotFlow) to StateFlow(stateIn)
     private val shouldTrack = snapshotFlow { state.shouldTrack }
         .stateIn(viewModelScope, SharingStarted.Lazily, state.shouldTrack)
 
@@ -56,6 +59,14 @@ class ActiveRunViewModel(
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     init {
+        watchConnector
+            .connectedDevice
+            .onEach { it ->
+
+                Timber.d("$it")
+                Timber.d("New Device detected: ${it?.displayName}")
+            }
+
         hasLocationPermission.onEach { hasPermission ->
             if (hasPermission) {
                 runningTracker.startObservingLocation()

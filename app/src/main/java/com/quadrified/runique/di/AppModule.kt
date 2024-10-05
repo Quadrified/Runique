@@ -20,6 +20,7 @@ val appModule = module {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
+    // Providing applicationScopeÎ
     single<CoroutineScope> {
         (androidApplication() as RuniqueApp).applicationScope
     }
